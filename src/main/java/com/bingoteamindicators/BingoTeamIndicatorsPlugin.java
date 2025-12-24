@@ -96,14 +96,14 @@ public class BingoTeamIndicatorsPlugin extends Plugin {
 
 	@Subscribe
 	public void onChatMessage(ChatMessage event) {
-		if (event.getType() == ChatMessageType.CLAN_CHAT || event.getType() == ChatMessageType.CLAN_GUEST_CHAT || event.getType() == ChatMessageType.FRIENDSCHAT || event.getType() == ChatMessageType.CLAN_GIM_CHAT) {
+		if (event.getType() == ChatMessageType.CLAN_CHAT || event.getType() == ChatMessageType.CLAN_GUEST_CHAT || event.getType() == ChatMessageType.FRIENDSCHAT) {
 			String name = Text.standardize(Text.removeTags(event.getName().toLowerCase()));
 			if (nameNumberCombo.containsKey(name)) {
 				//rebuildChat(Text.removeTags(event.getName()));
 				rebuildChat(event.getName());
 			}
 		}
-		else if (event.getType() == ChatMessageType.CLAN_MESSAGE || event.getType() == ChatMessageType.CLAN_GUEST_MESSAGE || event.getType() == ChatMessageType.CLAN_GIM_MESSAGE) {
+		else if (event.getType() == ChatMessageType.CLAN_MESSAGE || event.getType() == ChatMessageType.CLAN_GUEST_MESSAGE) {
 			String name = Text.standardize(Text.removeTags(event.getMessage().toLowerCase()));
 			name = name.split(" has a funny ")[0].split(" has achieved ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0];
 			if (nameNumberCombo.containsKey(name)) {
@@ -151,7 +151,7 @@ public class BingoTeamIndicatorsPlugin extends Plugin {
 		for (MessageNode msg : msgs) {
 			ChatMessageType msgType = msg.getType();
 			String rsnFromEvent = Text.standardize(Text.removeTags(rsn)).toLowerCase();
-			if (msgType == ChatMessageType.CLAN_CHAT || msgType == ChatMessageType.CLAN_GUEST_CHAT || msgType == ChatMessageType.FRIENDSCHAT || msgType == ChatMessageType.CLAN_GIM_CHAT)
+			if (msgType == ChatMessageType.CLAN_CHAT || msgType == ChatMessageType.CLAN_GUEST_CHAT || msgType == ChatMessageType.FRIENDSCHAT)
 			{
 				String cleanRsn = Text.standardize(Text.removeTags(msg.getName()));
 				if (cleanRsn.equals(rsnFromEvent) && !msg.getValue().startsWith(iconTags.get(nameNumberCombo.get(cleanRsn.toLowerCase()))))
@@ -160,7 +160,7 @@ public class BingoTeamIndicatorsPlugin extends Plugin {
 					needsRefresh = true;
 				}
 			}
-			else if (msgType == ChatMessageType.CLAN_MESSAGE || msgType == ChatMessageType.CLAN_GUEST_MESSAGE || msgType == ChatMessageType.CLAN_GIM_MESSAGE)
+			else if (msgType == ChatMessageType.CLAN_MESSAGE || msgType == ChatMessageType.CLAN_GUEST_MESSAGE)
 			{
 				String cleanRsn = Text.standardize(Text.removeTags(msg.getValue())).toLowerCase().split(" has a funny ")[0].split(" has achieved ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0];
 				if (cleanRsn.equals(rsnFromEvent) && !msg.getValue().startsWith(iconTags.get(nameNumberCombo.get(cleanRsn.toLowerCase()))))
