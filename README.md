@@ -1,6 +1,6 @@
 # Bingo Team Indicators
-Do you struggle remembering who is on your Bingo team durin Clan Events?
-Have you accidentally cheered for an opposing team getting a drop, thinking it was your team?
+Do you struggle remembering who is on your Bingo team during Clan Events?
+Have you accidentally cheered for an opposing team member getting a drop, thinking they're on your team?
 
 No more!
 
@@ -11,7 +11,7 @@ The Bingo Team Indicators plugin adds an icon to people's name in the chatbox, s
 # How it works
 -> Simply fill in the desired amount of teams (between 1 and 15) in the Sidepanel.  
 -> Fill in the in-game names of the participants in the textfields, separated by commas.  
--> The plugin will now add an icon before the names of the participants based on which team they're in in Clan chat, Guest Clan chat, and Friends chat!
+-> The plugin will now add an icon before the names of the participants based on which team they're in Clan chat, Guest Clan chat, and Friends chat!
 
 *Please note: This plugin WILL remove Ironman icons in these chats too.*
 
