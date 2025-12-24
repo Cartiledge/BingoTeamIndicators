@@ -154,7 +154,7 @@ public class BingoTeamIndicatorsPlugin extends Plugin {
 			if (msgType == ChatMessageType.CLAN_CHAT || msgType == ChatMessageType.CLAN_GUEST_CHAT || msgType == ChatMessageType.FRIENDSCHAT || msgType == ChatMessageType.CLAN_GIM_CHAT)
 			{
 				String cleanRsn = Text.standardize(Text.removeTags(msg.getName()));
-				if (cleanRsn.equals(rsnFromEvent))
+				if (cleanRsn.equals(rsnFromEvent) && !msg.getValue().startsWith(iconTags.get(nameNumberCombo.get(cleanRsn.toLowerCase()))))
 				{
 					msg.setName(iconTags.get(nameNumberCombo.get(cleanRsn.toLowerCase())) + rsn);
 					needsRefresh = true;
