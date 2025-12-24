@@ -13,8 +13,6 @@ The Bingo Team Indicators plugin adds an icon to people's name in the chatbox, s
 -> Fill in the in-game names of the participants in the textfields, separated by commas.  
 -> The plugin will now add an icon before the names of the participants based on which team they're in Clan chat, Guest Clan chat, and Friends chat!
 
-*Please note: This plugin WILL remove Ironman icons in these chats too.*
-
 See screenshots: *(screenshots use outdated icons)*
 
 ![chatbox](https://github.com/EwwItsMike/CustomDiscordPresence/assets/120571801/38ae9596-5a10-4368-9368-ce5f7e133656)
