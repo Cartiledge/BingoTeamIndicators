@@ -105,9 +105,9 @@ public class BingoTeamIndicatorsPlugin extends Plugin {
 		}
 		else if (event.getType() == ChatMessageType.CLAN_MESSAGE || event.getType() == ChatMessageType.CLAN_GUEST_MESSAGE || event.getType() == ChatMessageType.CLAN_GIM_MESSAGE) {
 			String name = Text.standardize(Text.removeTags(event.getMessage().toLowerCase()));
-			name = name.split(" has a funny ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0];
+			name = name.split(" has a funny ")[0].split(" has achieved ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0];
 			if (nameNumberCombo.containsKey(name)) {
-				rebuildChat(Text.removeTags(event.getMessage()).split(" has a funny ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0]);
+				rebuildChat(Text.removeTags(event.getMessage()).split(" has a funny ")[0].split(" has achieved ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0]);
 			}
 		}
 	}
@@ -162,8 +162,8 @@ public class BingoTeamIndicatorsPlugin extends Plugin {
 			}
 			else if (msgType == ChatMessageType.CLAN_MESSAGE || msgType == ChatMessageType.CLAN_GUEST_MESSAGE || msgType == ChatMessageType.CLAN_GIM_MESSAGE)
 			{
-				String cleanRsn = Text.standardize(Text.removeTags(msg.getValue())).toLowerCase().split(" has a funny ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0];
-				if (cleanRsn.equals(rsnFromEvent))
+				String cleanRsn = Text.standardize(Text.removeTags(msg.getValue())).toLowerCase().split(" has a funny ")[0].split(" has achieved ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0];
+				if (cleanRsn.equals(rsnFromEvent) && !msg.getValue().startsWith(iconTags.get(nameNumberCombo.get(cleanRsn.toLowerCase()))))
 				{
 					msg.setValue(iconTags.get(nameNumberCombo.get(cleanRsn.toLowerCase())) + msg.getValue());
 					needsRefresh = true;
