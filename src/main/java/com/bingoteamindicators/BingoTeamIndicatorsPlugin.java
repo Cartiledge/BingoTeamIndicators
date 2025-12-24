@@ -28,145 +28,166 @@ import java.util.HashMap;
 
 @Slf4j
 @PluginDescriptor(
-        name = "Bingo Team Indicators"
+	name = "Bingo Team Indicators"
 )
 public class BingoTeamIndicatorsPlugin extends Plugin {
-    @Inject
-    private Client client;
+	@Inject
+	private Client client;
 
-    @Inject
-    private BingoTeamIndicatorsConfig config;
+	@Inject
+	private BingoTeamIndicatorsConfig config;
 
-    @Inject
-    private ClientToolbar clientToolbar;
+	@Inject
+	private ClientToolbar clientToolbar;
 
-    @Inject
-    private ClientThread clientThread;
+	@Inject
+	private ClientThread clientThread;
 
-    //Sidepanel
-    private BingoTeamIndicatorsPanel panel;
-    private NavigationButton navButton;
+	//Sidepanel
+	private BingoTeamIndicatorsPanel panel;
+	private NavigationButton navButton;
 
-    //Icons stuff
-    private final HashMap<ChatIcons, Integer> iconIds = new HashMap<>();
-    private final HashMap<Integer, String> iconTags = new HashMap<>();
-    private final HashMap<String, Integer> nameNumberCombo = new HashMap<>();
-    private boolean hasLoaded = false;
+	//Icons stuff
+	private final HashMap<ChatIcons, Integer> iconIds = new HashMap<>();
+	private final HashMap<Integer, String> iconTags = new HashMap<>();
+	private final HashMap<String, Integer> nameNumberCombo = new HashMap<>();
+	private boolean hasLoaded = false;
 
-    @Provides
-    BingoTeamIndicatorsConfig provideConfig(ConfigManager configManager) {
-        return configManager.getConfig(BingoTeamIndicatorsConfig.class);
-    }
+	@Provides
+	BingoTeamIndicatorsConfig provideConfig(ConfigManager configManager) {
+		return configManager.getConfig(BingoTeamIndicatorsConfig.class);
+	}
 
-    private BufferedImage getIcon() {
-        return ImageUtil.loadImageResource(BingoTeamIndicatorsPlugin.class, "/panelIcon.png");
-    }
+	private BufferedImage getIcon() {
+		return ImageUtil.loadImageResource(BingoTeamIndicatorsPlugin.class, "/panelIcon.png");
+	}
 
-    @Override
-    protected void startUp() throws Exception {
-        panel = injector.getInstance(BingoTeamIndicatorsPanel.class);
-        panel.init();
+	@Override
+	protected void startUp() throws Exception {
+		panel = injector.getInstance(BingoTeamIndicatorsPanel.class);
+		panel.init();
 
-        navButton = NavigationButton.builder()
-                .tooltip("Bingo Team Indicators")
-                .priority(10)
-                .icon(getIcon())
-                .panel(panel)
-                .build();
+		navButton = NavigationButton.builder()
+			.tooltip("Bingo Team Indicators")
+			.priority(10)
+			.icon(getIcon())
+			.panel(panel)
+			.build();
 
-        clientToolbar.addNavigation(navButton);
-    }
+		clientToolbar.addNavigation(navButton);
+	}
 
-    @Override
-    protected void shutDown() throws Exception {
-        clientToolbar.removeNavigation(navButton);
-    }
+	@Override
+	protected void shutDown() throws Exception {
+		clientToolbar.removeNavigation(navButton);
+	}
 
-    @Subscribe
-    public void onGameStateChanged(GameStateChanged state) {
-        if (!hasLoaded && state.getGameState() == GameState.LOGGED_IN) {
-            clientThread.invoke(() -> {
-                if (client.getModIcons() == null) return;
-                loadIcons();
-                panel.init();
-                hasLoaded = true;
-            });
-        }
-    }
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged state) {
+		if (!hasLoaded && state.getGameState() == GameState.LOGGED_IN) {
+			clientThread.invoke(() -> {
+				if (client.getModIcons() == null) return;
+				loadIcons();
+				panel.init();
+				hasLoaded = true;
+			});
+		}
+	}
 
-    @Subscribe
-    public void onChatMessage(ChatMessage event) {
-        if (event.getType() != ChatMessageType.CLAN_CHAT && event.getType() != ChatMessageType.CLAN_GUEST_CHAT && event.getType() != ChatMessageType.FRIENDSCHAT) {
-            return;
-        }
-        String name = Text.standardize(Text.removeTags(event.getName().toLowerCase()));
-        if (nameNumberCombo.containsKey(name)) {
-            rebuildChat(Text.removeTags(event.getName()));
-        }
-    }
+	@Subscribe
+	public void onChatMessage(ChatMessage event) {
+		if (event.getType() == ChatMessageType.CLAN_CHAT || event.getType() == ChatMessageType.CLAN_GUEST_CHAT || event.getType() == ChatMessageType.FRIENDSCHAT || event.getType() == ChatMessageType.CLAN_GIM_CHAT) {
+			String name = Text.standardize(Text.removeTags(event.getName().toLowerCase()));
+			if (nameNumberCombo.containsKey(name)) {
+				//rebuildChat(Text.removeTags(event.getName()));
+				rebuildChat(event.getName());
+			}
+		}
+		else if (event.getType() == ChatMessageType.CLAN_MESSAGE || event.getType() == ChatMessageType.CLAN_GUEST_MESSAGE || event.getType() == ChatMessageType.CLAN_GIM_MESSAGE) {
+			String name = Text.standardize(Text.removeTags(event.getMessage().toLowerCase()));
+			name = name.split(" has a funny ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0];
+			if (nameNumberCombo.containsKey(name)) {
+				rebuildChat(Text.removeTags(event.getMessage()).split(" has a funny ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0]);
+			}
+		}
+	}
 
-    private void loadIcons() {
-        final IndexedSprite[] modIcons = client.getModIcons();
+	private void loadIcons() {
+		final IndexedSprite[] modIcons = client.getModIcons();
 
-        if (modIcons == null) return;
+		if (modIcons == null) return;
 
-        int index = 0;
-        for (ChatIcons icon : ChatIcons.values()) {
-            iconIds.put(icon, modIcons.length + index);
-            index++;
-        }
+		int index = 0;
+		for (ChatIcons icon : ChatIcons.values()) {
+			iconIds.put(icon, modIcons.length + index);
+			index++;
+		}
 
-        final IndexedSprite[] newModIcons = Arrays.copyOf(modIcons, modIcons.length + 15);
+		final IndexedSprite[] newModIcons = Arrays.copyOf(modIcons, modIcons.length + 15);
 
-        for (ChatIcons icon : iconIds.keySet()) {
+		for (ChatIcons icon : iconIds.keySet()) {
 
-            try (InputStream s = getClass().getResourceAsStream(icon.getIconPath());
-                 InputStream bufIn = new BufferedInputStream(s))
-            {
-                BufferedImage bf = ImageIO.read(bufIn);
-                IndexedSprite sprite = ImageUtil.getImageIndexedSprite(bf, client);
-                newModIcons[iconIds.get(icon)] = sprite;
+			try (InputStream s = getClass().getResourceAsStream(icon.getIconPath());
+				 InputStream bufIn = new BufferedInputStream(s))
+			{
+				BufferedImage bf = ImageIO.read(bufIn);
+				IndexedSprite sprite = ImageUtil.getImageIndexedSprite(bf, client);
+				newModIcons[iconIds.get(icon)] = sprite;
 
-                iconTags.put((iconIds.get(icon) - modIcons.length), "<img=" + iconIds.get(icon) + ">");
+				iconTags.put((iconIds.get(icon) - modIcons.length), "<img=" + iconIds.get(icon) + ">");
 
-            } catch(IOException ioException) {
-                ioException.printStackTrace();
-            }
-        }
+			} catch(IOException ioException) {
+				ioException.printStackTrace();
+			}
+		}
 
-        client.setModIcons(newModIcons);
-    }
+		client.setModIcons(newModIcons);
+	}
 
-    private void rebuildChat(String rsn) {
-        boolean needsRefresh = false;
-        IterableHashTable<MessageNode> msgs = client.getMessages();
+	private void rebuildChat(String rsn) {
+		boolean needsRefresh = false;
+		IterableHashTable<MessageNode> msgs = client.getMessages();
 
-        for (MessageNode msg : msgs) {
-            String cleanRsn = Text.standardize(Text.removeTags(msg.getName()));
-            String rsnFromEvent = Text.standardize(rsn);
-            ChatMessageType msgType = msg.getType();
+		for (MessageNode msg : msgs) {
+			ChatMessageType msgType = msg.getType();
+			String rsnFromEvent = Text.standardize(Text.removeTags(rsn)).toLowerCase();
+			if (msgType == ChatMessageType.CLAN_CHAT || msgType == ChatMessageType.CLAN_GUEST_CHAT || msgType == ChatMessageType.FRIENDSCHAT || msgType == ChatMessageType.CLAN_GIM_CHAT)
+			{
+				String cleanRsn = Text.standardize(Text.removeTags(msg.getName()));
+				if (cleanRsn.equals(rsnFromEvent))
+				{
+					msg.setName(iconTags.get(nameNumberCombo.get(cleanRsn.toLowerCase())) + rsn);
+					needsRefresh = true;
+				}
+			}
+			else if (msgType == ChatMessageType.CLAN_MESSAGE || msgType == ChatMessageType.CLAN_GUEST_MESSAGE || msgType == ChatMessageType.CLAN_GIM_MESSAGE)
+			{
+				String cleanRsn = Text.standardize(Text.removeTags(msg.getValue())).toLowerCase().split(" has a funny ")[0].split(" has been defeated ")[0].split(" has completed ")[0].split(" has defeated ")[0].split(" has died and ")[0].split(" has reached ")[0].split(" received a ")[0].split(" received special ")[0];
+				if (cleanRsn.equals(rsnFromEvent))
+				{
+					msg.setValue(iconTags.get(nameNumberCombo.get(cleanRsn.toLowerCase())) + msg.getValue());
+					needsRefresh = true;
+				}
+			}
+		}
 
-            if (cleanRsn.equals(rsnFromEvent) && (msgType == ChatMessageType.CLAN_CHAT || msgType == ChatMessageType.CLAN_GUEST_CHAT || msgType == ChatMessageType.FRIENDSCHAT)) {
-                msg.setName(iconTags.get(nameNumberCombo.get(cleanRsn.toLowerCase())) + rsn);
-                needsRefresh = true;
-            }
-        }
-        if (needsRefresh) {
-            client.refreshChat();
-        }
-    }
+		if (needsRefresh)
+		{
+			client.refreshChat();
+		}
+	}
 
-    public void linkNamesToIcons() {
-        PersistentVariablesHandler handler = panel.getDataHandler();
+	public void linkNamesToIcons() {
+		PersistentVariablesHandler handler = panel.getDataHandler();
 
-        nameNumberCombo.clear();
+		nameNumberCombo.clear();
 
-        for (int i = 0; i < handler.getNames().size(); i++) {
-            String[] names = handler.getNames().get(i).split(",");
-            for (int j = 0; j < names.length; j++) {
-                names[j] = names[j].strip();
-                nameNumberCombo.put(names[j].toLowerCase(), i);
-            }
-        }
-    }
+		for (int i = 0; i < handler.getNames().size(); i++) {
+			String[] names = handler.getNames().get(i).split(",");
+			for (int j = 0; j < names.length; j++) {
+				names[j] = names[j].strip();
+				nameNumberCombo.put(names[j].toLowerCase(), i);
+			}
+		}
+	}
 }
